@@ -12,8 +12,8 @@ The system provides role-based access for three distinct user types:
 
 ## Tech Stack
 
-* **Frontend:** React with React-Bootstrap[cite: 1]
-* **Backend:** ASP.NET Core 8 Web API[cite: 1]
+* **Frontend:** React with React-Bootstrap
+* **Backend:** ASP.NET Core 8 Web API
 * **Database & ORM:** Microsoft SQL Server with Entity Framework Core (Code-First)
 * **Security:** ASP.NET Identity (Role-based authentication & authorization)
 
