@@ -10,7 +10,7 @@ namespace GymManagement.Controllers
 {
     [Route("api/member")]
     [ApiController]
-    [Authorize(Roles = "GymMember")]
+    [Authorize(Roles = "Member")]
     public class MemberController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
