@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Everyone imports this file for API calls — nobody creates their own axios instance.
 const api = axios.create({
-  baseURL: 'https://localhost:7000/api', // update to match your Web API's actual port
+  baseURL: 'https://localhost:7005/api', // update to match your Web API's actual port
 });
 
 // Attach the token to every request automatically.
