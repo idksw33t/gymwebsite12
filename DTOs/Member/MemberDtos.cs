@@ -56,5 +56,5 @@ public class MemberDashboardDto
 
 public class UpdateTaskStatusDto
 {
-    public WorkoutTaskStatus Status { get; set; }
+       public string Status { get; set; } = ""; 
 }

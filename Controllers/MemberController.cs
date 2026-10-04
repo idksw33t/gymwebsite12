@@ -1,4 +1,5 @@
 using GymManagement.Data;
+using GymManagement.DTOs.Member;
 using GymManagement.Models.Entities;
 using GymManagement.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -31,90 +32,87 @@ namespace GymManagement.Controllers
                 .FirstOrDefaultAsync(m => m.UserId == userId);
         }
 
+        private IActionResult MemberNotFound() =>
+            NotFound(new { message = "Member profile not found for this user." });
+
+        private static string FullName(string name, string surname) => $"{name} {surname}";
+
+        private static TaskDto ToTaskDto(WorkoutTask t) => new()
+        {
+            Id = t.Id,
+            ExerciseName = t.ExerciseName,
+            Description = t.Description,
+            Sets = t.Sets,
+            Repetitions = t.Repetitions,
+            DueDate = DateOnly.FromDateTime(t.DueDate),
+            Status = t.Status,
+            WorkoutPlanId = t.WorkoutPlanId,
+            WorkoutPlanName = t.WorkoutPlan?.Name ?? ""
+        };
+
+        private static PlanDto ToPlanDto(WorkoutPlan p) => new()
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            GymMemberId = p.GymMemberId,
+            TrainingProgrammeId = p.TrainingProgrammeId,
+            TrainingProgrammeName = p.TrainingProgramme?.Name ?? "",
+            TaskCount = p.WorkoutTasks.Count,
+            CompletedCount = p.WorkoutTasks.Count(t => t.Status == WorkoutTaskStatus.Complete)
+        };
+
+        // GET /api/member/dashboard
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboard()
         {
             var member = await GetCurrentMemberAsync();
-            if (member == null) return NotFound("Member profile not found for this user.");
+            if (member == null) return MemberNotFound();
 
-            var planIds = await _context.WorkoutPlans
-                .Where(p => p.GymMemberId == member.Id)
-                .Select(p => p.Id)
-                .ToListAsync();
+            var planCount = await _context.WorkoutPlans
+                .CountAsync(p => p.GymMemberId == member.Id);
 
             var tasks = await _context.WorkoutTasks
-                .Where(t => planIds.Contains(t.WorkoutPlanId))
+                .Include(t => t.WorkoutPlan)
+                .Where(t => t.WorkoutPlan.GymMemberId == member.Id)
                 .ToListAsync();
 
             var upcoming = tasks
                 .Where(t => t.Status != WorkoutTaskStatus.Complete)
                 .OrderBy(t => t.DueDate)
                 .Take(5)
-                .Select(t => new
-                {
-                    id = t.Id,
-                    exerciseName = t.ExerciseName,
-                    dueDate = t.DueDate.ToString("yyyy-MM-dd"),
-                    status = t.Status.ToString()
-                });
+                .Select(ToTaskDto)
+                .ToList();
 
-            return Ok(new
+            var dto = new MemberDashboardDto
             {
-                memberName = $"{member.Name} {member.Surname}",
-                memberNumber = member.MemberNumber,
-                membershipType = member.MembershipType.ToString(),
-                programmeName = member.TrainingProgramme?.Name,
-                fitnessGoal = member.TrainingProgramme?.FitnessGoal.ToString(),
-                trainerName = member.PersonalTrainer != null
-                    ? $"{member.PersonalTrainer.Name} {member.PersonalTrainer.Surname}"
-                    : null,
-                planCount = planIds.Count,
-                notStartedCount = tasks.Count(t => t.Status == WorkoutTaskStatus.NotStarted),
-                inProgressCount = tasks.Count(t => t.Status == WorkoutTaskStatus.InProgress),
-                completeCount = tasks.Count(t => t.Status == WorkoutTaskStatus.Complete),
-                upcomingTasks = upcoming
-            });
+                MemberName = FullName(member.Name, member.Surname),
+                MemberNumber = member.MemberNumber,
+                MembershipType = member.MembershipType,
+                ProgrammeName = member.TrainingProgramme?.Name ?? "",
+                FitnessGoal = member.TrainingProgramme?.FitnessGoal,
+                TrainerName = member.PersonalTrainer != null
+                    ? FullName(member.PersonalTrainer.Name, member.PersonalTrainer.Surname)
+                    : "",
+                PlanCount = planCount,
+                NotStartedCount = tasks.Count(t => t.Status == WorkoutTaskStatus.NotStarted),
+                InProgressCount = tasks.Count(t => t.Status == WorkoutTaskStatus.InProgress),
+                CompleteCount = tasks.Count(t => t.Status == WorkoutTaskStatus.Complete),
+                UpcomingTasks = upcoming
+            };
+
+            return Ok(dto);
         }
 
+        // GET /api/member/programme
         [HttpGet("programme")]
         public async Task<IActionResult> GetProgramme()
         {
             var member = await GetCurrentMemberAsync();
-            if (member == null) return NotFound("Member profile not found for this user.");
+            if (member == null) return MemberNotFound();
 
             if (member.TrainingProgramme == null)
-                return Ok(new { message = "No training programme assigned yet." });
-
-            var plans = await _context.WorkoutPlans
-                .Where(p => p.GymMemberId == member.Id)
-                .Include(p => p.WorkoutTasks)
-                .ToListAsync();
-
-            return Ok(new
-            {
-                id = member.TrainingProgramme.Id,
-                name = member.TrainingProgramme.Name,
-                description = member.TrainingProgramme.Description,
-                durationWeeks = member.TrainingProgramme.DurationWeeks,
-                fitnessGoal = member.TrainingProgramme.FitnessGoal.ToString(),
-                trainerName = member.PersonalTrainer != null
-                    ? $"{member.PersonalTrainer.Name} {member.PersonalTrainer.Surname}"
-                    : null,
-                trainerSpecialization = member.PersonalTrainer?.Specialization.ToString(),
-                plans = plans.Select(p => new
-                {
-                    id = p.Id,
-                    name = p.Name,
-                    taskCount = p.WorkoutTasks.Count
-                })
-            });
-        }
-
-        [HttpGet("plans")]
-        public async Task<IActionResult> GetPlans()
-        {
-            var member = await GetCurrentMemberAsync();
-            if (member == null) return NotFound("Member profile not found for this user.");
+                return NotFound(new { message = "No training programme assigned yet." });
 
             var plans = await _context.WorkoutPlans
                 .Where(p => p.GymMemberId == member.Id)
@@ -122,72 +120,72 @@ namespace GymManagement.Controllers
                 .Include(p => p.TrainingProgramme)
                 .ToListAsync();
 
-            var result = plans.Select(p => new
+            var dto = new MemberProgrammeDto
             {
-                id = p.Id,
-                name = p.Name,
-                description = p.Description,
-                trainingProgrammeId = p.TrainingProgrammeId,
-                trainingProgrammeName = p.TrainingProgramme?.Name,
-                taskCount = p.WorkoutTasks.Count,
-                completedCount = p.WorkoutTasks.Count(t => t.Status == WorkoutTaskStatus.Complete)
-            });
+                Id = member.TrainingProgramme.Id,
+                Name = member.TrainingProgramme.Name,
+                Description = member.TrainingProgramme.Description,
+                DurationWeeks = member.TrainingProgramme.DurationWeeks,
+                FitnessGoal = member.TrainingProgramme.FitnessGoal,
+                TrainerName = member.PersonalTrainer != null
+                    ? FullName(member.PersonalTrainer.Name, member.PersonalTrainer.Surname)
+                    : "",
+                TrainerSpecialization = member.PersonalTrainer?.Specialization,
+                Plans = plans.Select(ToPlanDto).ToList()
+            };
 
-            return Ok(result);
+            return Ok(dto);
         }
 
+        // GET /api/member/plans
+        [HttpGet("plans")]
+        public async Task<IActionResult> GetPlans()
+        {
+            var member = await GetCurrentMemberAsync();
+            if (member == null) return MemberNotFound();
+
+            var plans = await _context.WorkoutPlans
+                .Where(p => p.GymMemberId == member.Id)
+                .Include(p => p.WorkoutTasks)
+                .Include(p => p.TrainingProgramme)
+                .ToListAsync();
+
+            return Ok(plans.Select(ToPlanDto).ToList());
+        }
+
+        // GET /api/member/tasks?status=&planId=
         [HttpGet("tasks")]
         public async Task<IActionResult> GetTasks([FromQuery] string? status, [FromQuery] int? planId)
         {
             var member = await GetCurrentMemberAsync();
-            if (member == null) return NotFound("Member profile not found for this user.");
-
-            var planIds = await _context.WorkoutPlans
-                .Where(p => p.GymMemberId == member.Id)
-                .Select(p => p.Id)
-                .ToListAsync();
+            if (member == null) return MemberNotFound();
 
             var query = _context.WorkoutTasks
                 .Include(t => t.WorkoutPlan)
-                .Where(t => planIds.Contains(t.WorkoutPlanId));
+                .Where(t => t.WorkoutPlan.GymMemberId == member.Id);
 
             if (planId.HasValue)
                 query = query.Where(t => t.WorkoutPlanId == planId.Value);
 
-            if (!string.IsNullOrEmpty(status) &&
-                Enum.TryParse<WorkoutTaskStatus>(status, true, out var parsedStatus))
+            if (!string.IsNullOrWhiteSpace(status))
             {
+                if (!Enum.TryParse<WorkoutTaskStatus>(status, true, out var parsedStatus))
+                    return BadRequest(new { message = "Invalid status value. Use NotStarted, InProgress, or Complete." });
+
                 query = query.Where(t => t.Status == parsedStatus);
             }
 
-            var tasks = await query.ToListAsync();
+            var tasks = await query.OrderBy(t => t.DueDate).ToListAsync();
 
-            var result = tasks.Select(t => new
-            {
-                id = t.Id,
-                exerciseName = t.ExerciseName,
-                description = t.Description,
-                sets = t.Sets,
-                repetitions = t.Repetitions,
-                dueDate = t.DueDate.ToString("yyyy-MM-dd"),
-                status = t.Status.ToString(),
-                workoutPlanId = t.WorkoutPlanId,
-                workoutPlanName = t.WorkoutPlan != null ? t.WorkoutPlan.Name : null
-            });
-
-            return Ok(result);
+            return Ok(tasks.Select(ToTaskDto).ToList());
         }
 
-        public class UpdateStatusDto
-        {
-            public string Status { get; set; } = string.Empty;
-        }
-
+        // PUT /api/member/tasks/{taskId}/status
         [HttpPut("tasks/{taskId}/status")]
-        public async Task<IActionResult> UpdateTaskStatus(int taskId, [FromBody] UpdateStatusDto dto)
+        public async Task<IActionResult> UpdateTaskStatus(int taskId, [FromBody] UpdateTaskStatusDto dto)
         {
             var member = await GetCurrentMemberAsync();
-            if (member == null) return NotFound("Member profile not found for this user.");
+            if (member == null) return MemberNotFound();
 
             if (!Enum.TryParse<WorkoutTaskStatus>(dto.Status, true, out var newStatus))
                 return BadRequest(new { message = "Invalid status value. Use NotStarted, InProgress, or Complete." });
@@ -196,15 +194,16 @@ namespace GymManagement.Controllers
                 .Include(t => t.WorkoutPlan)
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
-            if (task == null) return NotFound("Task not found.");
+            if (task == null)
+                return NotFound(new { message = "Task not found." });
 
             if (task.WorkoutPlan == null || task.WorkoutPlan.GymMemberId != member.Id)
-                return Forbid();
+                return StatusCode(403, new { message = "You can only update your own tasks." });
 
             task.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            return Ok(new { id = task.Id, status = task.Status.ToString() });
+            return Ok(ToTaskDto(task));
         }
     }
 }
