@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table, Form, Alert, Spinner } from "react-bootstrap";
+import { useSearchParams } from "react-router-dom";
+import { Container, Table, Form, Alert, Spinner, Button } from "react-bootstrap";
 // TODO: uncomment once the shared api.js arrives from the Login branch
 // import api from "../../services/api";
 
@@ -12,6 +13,9 @@ const sampleTasks = [
 ];
 
 function MyTasks() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const planId = searchParams.get("planId");
+
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
@@ -57,7 +61,9 @@ function MyTasks() {
     }
   }
 
-  const visibleTasks = filter === "All" ? tasks : tasks.filter((t) => t.status === filter);
+  const visibleTasks = tasks
+    .filter((t) => filter === "All" || t.status === filter)
+    .filter((t) => !planId || t.workoutPlanId === Number(planId));
 
   if (loading) {
     return (
@@ -75,6 +81,14 @@ function MyTasks() {
         </Alert>
       )}
       {error && <Alert variant="danger">{error}</Alert>}
+      {planId && (
+        <Alert variant="secondary">
+          Showing tasks for one plan only.{" "}
+          <Button variant="link" className="p-0 align-baseline" onClick={() => setSearchParams({})}>
+            Show all tasks
+          </Button>
+        </Alert>
+      )}
 
       <h3>My Workout Tasks</h3>
 
@@ -110,7 +124,7 @@ function MyTasks() {
               <td>{task.repetitions}</td>
               <td>{task.dueDate}</td>
               <td>
-                                <Form.Select
+                <Form.Select
                   size="sm"
                   value={task.status}
                   onChange={(e) => handleStatusChange(task.id, e.target.value)}

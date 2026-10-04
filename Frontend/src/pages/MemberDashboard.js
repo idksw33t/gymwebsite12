@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Table, Badge, Button, Alert, Spinner } from "react-bootstrap";
 // TODO: uncomment once the shared api.js arrives from the Login branch
 // import api from "../../services/api";
@@ -33,6 +34,7 @@ function statusBadge(status) {
 }
 
 function MemberDashboard() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [usingSample, setUsingSample] = useState(false);
@@ -139,7 +141,7 @@ function MemberDashboard() {
         </tbody>
       </Table>
 
-      <Button className="btn-brand">View all tasks</Button>
+      <Button className="btn-brand" onClick={() => navigate("/tasks")}>View all tasks</Button>
     </Container>
   );
 }

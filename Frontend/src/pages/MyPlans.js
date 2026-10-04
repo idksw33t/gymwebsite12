@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Alert, Spinner } from "react-bootstrap";
 // TODO: uncomment once the shared api.js arrives from the Login branch
 // import api from "../../services/api";
@@ -11,6 +12,7 @@ const samplePlans = [
 ];
 
 function MyPlans() {
+  const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usingSample, setUsingSample] = useState(false);
@@ -60,7 +62,9 @@ function MyPlans() {
                 <Card.Body>
                   <Card.Text className="text-muted">{plan.trainingProgrammeName}</Card.Text>
                   <p>{plan.taskCount} tasks | {plan.completedCount} complete</p>
-                  <Button className="btn-brand">View tasks</Button>
+                  <Button className="btn-brand" onClick={() => navigate(`/tasks?planId=${plan.id}`)}>
+                    View tasks
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
