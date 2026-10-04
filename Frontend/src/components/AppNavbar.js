@@ -8,7 +8,7 @@ function AppNavbar() {
   return (
     <Navbar className="navbar-brand-custom" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">FitCore Gym</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">Motion Studio</Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar" />
         <Navbar.Collapse id="main-navbar">
           <Nav className="me-auto">
