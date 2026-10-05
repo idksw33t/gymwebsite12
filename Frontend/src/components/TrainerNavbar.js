@@ -2,7 +2,7 @@ import React from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 
-function AppNavbar() {
+function TrainerNavbar() {
   const location = useLocation();
 
   return (
@@ -23,4 +23,4 @@ function AppNavbar() {
   );
 }
 
-export default AppNavbar;
+export default TrainerNavbar;
