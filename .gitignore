@@ -3,3 +3,6 @@ bin/
 obj/
 *.user
 node_modules/
+=======
+*.user
+origin/member-controller
