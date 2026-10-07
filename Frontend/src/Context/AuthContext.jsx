@@ -4,7 +4,7 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 // Flip this to false once the real Web API + database (Areas 1 & 2) are ready.
-const USE_MOCK_AUTH = true;
+const USE_MOCK_AUTH = false;
 
 // Built-in test logins, in the exact response shape /api/auth/login will use.
 // Keep the email keys lowercase.
