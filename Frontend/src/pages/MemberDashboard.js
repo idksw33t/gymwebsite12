@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Table, Badge, Button, Alert, Spinner } from "react-bootstrap";
-// TODO: uncomment once the shared api.js arrives from the Login branch
-// import api from "../../services/api";
-
-const sampleData = {
-  memberName: "Kamo Mpoko",
-  memberNumber: "M0001",
-  membershipType: "Monthly",
-  programmeName: "12-Week Muscle Builder",
-  fitnessGoal: "MuscleBuilding",
-  trainerName: "Coach Sipho",
-  planCount: 3,
-  notStartedCount: 4,
-  inProgressCount: 2,
-  completeCount: 5,
-  upcomingTasks: [
-    { id: 1, exerciseName: "Bench press", workoutPlanName: "Upper body", dueDate: "2026-10-05", status: "NotStarted" },
-    { id: 2, exerciseName: "Squats", workoutPlanName: "Leg day", dueDate: "2026-10-06", status: "InProgress" },
-    { id: 3, exerciseName: "Treadmill run", workoutPlanName: "Cardio", dueDate: "2026-10-07", status: "NotStarted" },
-  ],
-};
+import api from "../services/api";
 
 // "MuscleBuilding" -> "Muscle Building"
 function spaced(value) {
@@ -37,17 +18,18 @@ function MemberDashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [usingSample, setUsingSample] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        // TODO: replace the next line with: const res = await api.get("/member/dashboard");
-        throw new Error("api.js not connected yet");
-        // setData(res.data);
+        const res = await api.get("/member/dashboard");
+        setData(res.data);
       } catch (err) {
-        setData(sampleData);
-        setUsingSample(true);
+        setError(
+          (err.response && err.response.data && err.response.data.message) ||
+            "Could not load your dashboard. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -63,12 +45,16 @@ function MemberDashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
   return (
     <Container className="mt-4">
-      {usingSample && (
-        <Alert variant="info">Showing sample data. The live dashboard isn't connected yet.</Alert>
-      )}
-
       <h3>Welcome, {data.memberName}</h3>
       <p className="text-muted">
         Member number: {data.memberNumber} | Membership: {data.membershipType}
@@ -141,7 +127,7 @@ function MemberDashboard() {
         </tbody>
       </Table>
 
-      <Button className="btn-brand" onClick={() => navigate("/tasks")}>View all tasks</Button>
+      <Button className="btn-brand" onClick={() => navigate("/member/tasks")}>View all tasks</Button>
     </Container>
   );
 }

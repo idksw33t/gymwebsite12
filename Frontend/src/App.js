@@ -4,8 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AppNavbar from './components/AppNavbar';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import MemberDashboard from './pages/MemberDashboard';
+import MyProgramme from './pages/MyProgramme';
+import MyPlans from './pages/MyPlans';
+import MyTasks from './pages/MyTasks';
 
 // Placeholders - each area's owner replaces these with their real dashboard.
 function AdminDashboard() {
@@ -14,8 +19,17 @@ function AdminDashboard() {
 function TrainerDashboard() {
   return <h2 className="p-4">Trainer Dashboard (Screen 9)</h2>;
 }
-function MemberDashboard() {
-  return <h2 className="p-4">Member Dashboard (Screen 13)</h2>;
+
+// Member screens: Member role only, with the member navbar on top
+function MemberPage({ children }) {
+  return (
+    <ProtectedRoute allowedRoles={['Member']}>
+      <>
+        <AppNavbar />
+        {children}
+      </>
+    </ProtectedRoute>
+  );
 }
 
 function App() {
@@ -42,14 +56,11 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/member/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['Member']}>
-                <MemberDashboard />
-              </ProtectedRoute>
-            }
-          />
+
+          <Route path="/member/dashboard" element={<MemberPage><MemberDashboard /></MemberPage>} />
+          <Route path="/member/programme" element={<MemberPage><MyProgramme /></MemberPage>} />
+          <Route path="/member/plans" element={<MemberPage><MyPlans /></MemberPage>} />
+          <Route path="/member/tasks" element={<MemberPage><MyTasks /></MemberPage>} />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

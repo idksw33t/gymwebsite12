@@ -8,14 +8,14 @@ function AppNavbar() {
   return (
     <Navbar className="navbar-brand-custom" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">Motion Studio</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/member/dashboard">Motion Studio</Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar" />
         <Navbar.Collapse id="main-navbar">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/" active={location.pathname === "/"}>Dashboard</Nav.Link>
-            <Nav.Link as={Link} to="/programme" active={location.pathname === "/programme"}>My Programme</Nav.Link>
-            <Nav.Link as={Link} to="/plans" active={location.pathname === "/plans"}>My Plans</Nav.Link>
-            <Nav.Link as={Link} to="/tasks" active={location.pathname === "/tasks"}>My Tasks</Nav.Link>
+            <Nav.Link as={Link} to="/member/dashboard" active={location.pathname === "/member/dashboard"}>Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/member/programme" active={location.pathname === "/member/programme"}>My Programme</Nav.Link>
+            <Nav.Link as={Link} to="/member/plans" active={location.pathname === "/member/plans"}>My Plans</Nav.Link>
+            <Nav.Link as={Link} to="/member/tasks" active={location.pathname === "/member/tasks"}>My Tasks</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

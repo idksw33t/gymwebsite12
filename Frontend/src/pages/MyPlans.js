@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Alert, Spinner } from "react-bootstrap";
-// TODO: uncomment once the shared api.js arrives from the Login branch
-// import api from "../../services/api";
-
-const samplePlans = [
-  { id: 1, name: "Upper body", trainingProgrammeName: "12-Week Muscle Builder", taskCount: 6, completedCount: 2 },
-  { id: 2, name: "Leg day", trainingProgrammeName: "12-Week Muscle Builder", taskCount: 5, completedCount: 1 },
-  { id: 3, name: "Cardio", trainingProgrammeName: "12-Week Muscle Builder", taskCount: 4, completedCount: 0 },
-  { id: 4, name: "Core", trainingProgrammeName: "12-Week Muscle Builder", taskCount: 3, completedCount: 3 },
-];
+import api from "../services/api";
 
 function MyPlans() {
   const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [usingSample, setUsingSample] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        // TODO: replace the next line with: const res = await api.get("/member/plans");
-        throw new Error("api.js not connected yet");
-        // setPlans(res.data);
+        const res = await api.get("/member/plans");
+        setPlans(res.data);
       } catch (err) {
-        setPlans(samplePlans);
-        setUsingSample(true);
+        setError(
+          (err.response && err.response.data && err.response.data.message) ||
+            "Could not load your plans. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -41,12 +34,16 @@ function MyPlans() {
     );
   }
 
+  if (error) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
   return (
     <Container className="mt-4">
-      {usingSample && (
-        <Alert variant="info">Showing sample data. Your live plans aren't connected yet.</Alert>
-      )}
-
       <h3>My Workout Plans</h3>
 
       {plans.length === 0 ? (
@@ -62,7 +59,7 @@ function MyPlans() {
                 <Card.Body>
                   <Card.Text className="text-muted">{plan.trainingProgrammeName}</Card.Text>
                   <p>{plan.taskCount} tasks | {plan.completedCount} complete</p>
-                  <Button className="btn-brand" onClick={() => navigate(`/tasks?planId=${plan.id}`)}>
+                  <Button className="btn-brand" onClick={() => navigate(`/member/tasks?planId=${plan.id}`)}>
                     View tasks
                   </Button>
                 </Card.Body>

@@ -1,22 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Card, Table, Alert, Spinner } from "react-bootstrap";
-// TODO: uncomment once the shared api.js arrives from the Login branch
-// import api from "../../services/api";
-
-const sampleProgramme = {
-  id: 3,
-  name: "12-Week Muscle Builder",
-  description: "A structured plan to build lean muscle over 12 weeks.",
-  durationWeeks: 12,
-  fitnessGoal: "MuscleBuilding",
-  trainerName: "Coach Sipho",
-  trainerSpecialization: "WeightTraining",
-  plans: [
-    { id: 1, name: "Upper body", taskCount: 6 },
-    { id: 2, name: "Leg day", taskCount: 5 },
-    { id: 3, name: "Cardio", taskCount: 4 },
-  ],
-};
+import api from "../services/api";
 
 // "MuscleBuilding" -> "Muscle Building"
 function spaced(value) {
@@ -26,22 +10,23 @@ function spaced(value) {
 function MyProgramme() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [usingSample, setUsingSample] = useState(false);
   const [notAssigned, setNotAssigned] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        // TODO: replace the next line with: const res = await api.get("/member/programme");
-        throw new Error("api.js not connected yet");
-        // setData(res.data);
+        const res = await api.get("/member/programme");
+        setData(res.data);
       } catch (err) {
         if (err.response && err.response.status === 404) {
           // The API says no programme is assigned yet
           setNotAssigned(true);
         } else {
-          setData(sampleProgramme);
-          setUsingSample(true);
+          setError(
+            (err.response && err.response.data && err.response.data.message) ||
+              "Could not load your programme. Please try again."
+          );
         }
       } finally {
         setLoading(false);
@@ -54,6 +39,14 @@ function MyProgramme() {
     return (
       <Container className="mt-4">
         <Spinner animation="border" size="sm" /> Loading...
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">{error}</Alert>
       </Container>
     );
   }
@@ -71,10 +64,6 @@ function MyProgramme() {
 
   return (
     <Container className="mt-4">
-      {usingSample && (
-        <Alert variant="info">Showing sample data. The live programme isn't connected yet.</Alert>
-      )}
-
       <h3>My Training Programme</h3>
 
       <Card className="mb-4 mt-3">
