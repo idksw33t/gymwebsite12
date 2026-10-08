@@ -13,6 +13,7 @@ function AdminPortal({ onBack }) {
   const [activeTab, setActiveTab] = useState('members')
   const [checkingSession, setCheckingSession] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -55,24 +56,109 @@ function AdminPortal({ onBack }) {
     )
   }
 
-  return (
-    <>
+  if (!admin) {
+    return (
+      <>
       <ToastContainer position="top-right" />
-      <Container fluid="lg" className="py-4">
-        <div className="d-flex align-items-center justify-content-between mb-4">
-          <div>
-            <Button variant="link" className="p-0 mb-2" onClick={onBack}>Back to GymFlow</Button>
-            <h1 className="h3 mb-0">Gym administration</h1>
+      <div className="login-page">
+        <aside className="login-brand">
+          <div className="login-brand-inner">
+            <div className="login-logo">G</div>
+            <h1>GymFlow</h1>
+            <p>Manage members, trainers and training programmes from one place.</p>
+            <ul className="login-points">
+              <li>Add and update members and trainers</li>
+              <li>Assign trainers and programmes</li>
+              <li>Search and track everything quickly</li>
+            </ul>
           </div>
-          {admin && (
-            <div className="d-flex align-items-center gap-3">
-              <span>{admin.email}</span>
-              <Button variant="outline-secondary" onClick={handleLogout}>Sign out</Button>
-            </div>
-          )}
-        </div>
+        </aside>
 
-        {admin ? (
+        <main className="login-panel">
+          <div className="login-card">
+            <button type="button" className="login-back" onClick={onBack}>
+              &larr; Back to GymFlow
+            </button>
+
+            <span className="login-kicker">Admin Portal</span>
+            <h2>Welcome back</h2>
+            <p className="login-sub">Sign in with your administrator account to continue.</p>
+
+            {error && <Alert variant="danger">{error}</Alert>}
+
+            <Form onSubmit={handleLogin}>
+              <Form.Group className="mb-3" controlId="adminEmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  size="lg"
+                  placeholder="admin@gym.com"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4" controlId="adminPassword">
+                <Form.Label>Password</Form.Label>
+                <div className="password-wrap">
+                  <Form.Control
+                    type={showPassword ? 'text' : 'password'}
+                    size="lg"
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword((v) => !v)}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </Form.Group>
+
+              <Button type="submit" size="lg" className="w-100" disabled={submitting}>
+                {submitting ? 'Signing in...' : 'Sign in'}
+              </Button>
+            </Form>
+          </div>
+        </main>
+      </div>
+      </>
+    )
+  }
+
+  return (
+    <div className="admin-page">
+      <ToastContainer position="top-right" />
+
+      <header className="admin-topbar">
+        <div className="admin-topbar-inner">
+          <div className="admin-brand">
+            <div className="admin-logo">G</div>
+            <div>
+              <strong>GymFlow</strong>
+              <span>Administration</span>
+            </div>
+          </div>
+
+          <div className="admin-user">
+            <button type="button" className="admin-back" onClick={onBack}>
+              &larr; Back to site
+            </button>
+            <span className="admin-email">{admin.email}</span>
+            <Button variant="light" size="sm" onClick={handleLogout}>Sign out</Button>
+          </div>
+        </div>
+      </header>
+
+      <Container fluid="lg" className="py-4">
+        <div className="admin-card">
           <Tab.Container activeKey={activeTab} onSelect={(key) => key && setActiveTab(key)}>
             <Nav variant="tabs" className="mb-3">
               <Nav.Item><Nav.Link eventKey="members">Members</Nav.Link></Nav.Item>
@@ -85,39 +171,9 @@ function AdminPortal({ onBack }) {
               <Tab.Pane eventKey="assignments"><Assignments active={activeTab === 'assignments'} /></Tab.Pane>
             </Tab.Content>
           </Tab.Container>
-        ) : (
-          <div className="mx-auto" style={{ maxWidth: 440 }}>
-            <h2 className="h4 mb-3">Administrator sign in</h2>
-            {error && <Alert variant="danger">{error}</Alert>}
-            <Form onSubmit={handleLogin}>
-              <Form.Group className="mb-3" controlId="adminEmail">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  autoComplete="username"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="adminPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? 'Signing in...' : 'Sign in'}
-              </Button>
-            </Form>
-          </div>
-        )}
+        </div>
       </Container>
-    </>
+    </div>
   )
 }
 

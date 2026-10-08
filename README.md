@@ -1,24 +1,16 @@
-# Gym Management System
+# React + Vite
 
-A full-stack web application for **FitCore Gym** designed to connect administrators, personal trainers, and gym members on a single platform.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Overview
+Currently, two official plugins are available:
 
-The system provides role-based access for three distinct user types:
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-* **Administrators:** Manage members, trainers, and training programmes, assign trainers to members, and view system user lists
-* **Personal Trainers:** View assigned members and create or manage workout plans and specific exercise tasks
-* **Gym Members:** Access their assigned training programme, view workout plans, and track or update their exercise task progress (`Not Started`, `In Progress`, `Complete`)
+## React Compiler
 
-## Tech Stack
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-* **Frontend:** React with React-Bootstrap
-* **Backend:** ASP.NET Core 8 Web API
-* **Database & ORM:** Microsoft SQL Server with Entity Framework Core (Code-First)
-* **Security:** ASP.NET Identity (Role-based authentication & authorization)
+## Expanding the ESLint configuration
 
-## Academic Context
-
-* **Course:** ITP2020 (Assignment 2)
-* **Institution:** Nelson Mandela University
-* **Due Date:** October 12, 2026
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

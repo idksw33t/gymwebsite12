@@ -8,7 +8,8 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:5080',
+        target: 'https://localhost:7150',
+        secure: false,
         changeOrigin: true,
       },
     },

@@ -1,42 +1,46 @@
 :root {
-  font-family: Inter, 'Segoe UI', sans-serif;
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-900: #7f1d1d;
+  --ink: #1a1a1a;
+  --muted: #6b7280;
+  --line: #f1d5d5;
+
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #111827;
-  background: #fff7f7;
+  color: var(--ink);
+  background: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Re-theme Bootstrap in red */
+  --bs-primary: #dc2626;
+  --bs-primary-rgb: 220, 38, 38;
+  --bs-link-color: #dc2626;
+  --bs-link-color-rgb: 220, 38, 38;
+  --bs-link-hover-color: #b91c1c;
+  --bs-link-hover-color-rgb: 185, 28, 28;
+  --bs-body-color: #1a1a1a;
+  --bs-border-color: #f1d5d5;
+  --bs-focus-ring-color: rgba(220, 38, 38, 0.25);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #fff7f7;
+  background: #ffffff;
 }
 
-button,
-a {
-  font: inherit;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-h1,
-h2,
-h3,
-p {
-  margin-top: 0;
-}
+button, a { font: inherit; }
+#root { min-height: 100vh; }
+h1, h2, h3, p { margin-top: 0; }
