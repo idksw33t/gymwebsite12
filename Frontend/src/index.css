@@ -6,7 +6,7 @@
 
 body {
   margin: 0;
-  background-color: #f7f7f7;
+  background: #120b0d url('./images/motion-neon-bg.svg') center / cover fixed no-repeat;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
