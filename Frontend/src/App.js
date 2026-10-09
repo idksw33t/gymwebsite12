@@ -7,13 +7,18 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
-// Placeholders - each area's owner replaces these with their real dashboard.
+// Trainer pages 
+import TrainerDashboard from './pages/trainer/TrainerDashboard';
+import MyMembers from './pages/trainer/MyMembers';
+import WorkoutPlans from './pages/trainer/WorkoutPlans';
+import WorkoutTasks from './pages/trainer/WorkoutTasks';
+
+// Admin placeholder — owner will replace this later
 function AdminDashboard() {
   return <h2 className="p-4">Admin Dashboard (Screen 2)</h2>;
 }
-function TrainerDashboard() {
-  return <h2 className="p-4">Trainer Dashboard (Screen 9)</h2>;
-}
+
+// Member placeholder — owner will replace this later
 function MemberDashboard() {
   return <h2 className="p-4">Member Dashboard (Screen 13)</h2>;
 }
@@ -23,9 +28,11 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
+          {/* Admin — placeholder for now */}
           <Route
             path="/admin/dashboard"
             element={
@@ -34,6 +41,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Trainer — YOUR REAL PAGES */}
           <Route
             path="/trainer/dashboard"
             element={
@@ -43,6 +52,32 @@ function App() {
             }
           />
           <Route
+            path="/trainer/members"
+            element={
+              <ProtectedRoute allowedRoles={['Trainer']}>
+                <MyMembers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trainer/members/:memberId/plans"
+            element={
+              <ProtectedRoute allowedRoles={['Trainer']}>
+                <WorkoutPlans />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trainer/plans/:planId/tasks"
+            element={
+              <ProtectedRoute allowedRoles={['Trainer']}>
+                <WorkoutTasks />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Member — placeholder for now */}
+          <Route
             path="/member/dashboard"
             element={
               <ProtectedRoute allowedRoles={['Member']}>
@@ -51,6 +86,7 @@ function App() {
             }
           />
 
+          {/* Fallback: any unknown URL goes to /login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
