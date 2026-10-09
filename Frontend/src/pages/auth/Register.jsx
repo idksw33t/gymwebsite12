@@ -61,7 +61,7 @@ function Register() {
     <Container fluid className="auth-bg d-flex justify-content-center align-items-center p-3">
       <Card className="auth-card">
         <Card.Body className="p-4">
-          <h2 className="text-center mb-1 auth-title">FitCore Gym</h2>
+          <h2 className="text-center mb-1 auth-title">Motion Studio</h2>
           <p className="text-center text-muted mb-4">Create your account</p>
 
           {error && <Alert variant="danger">{error}</Alert>}
