@@ -41,8 +41,9 @@ namespace GymManagement.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            // Assign role (Admin, PersonalTrainer, or GymMember)
-            await userManager.AddToRoleAsync(user, dto.Role);
+            // Assign role (Admin, Trainer or Member). Defaults to Member if none is sent.
+            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Member" : dto.Role;
+            await userManager.AddToRoleAsync(user, role);
 
             return Ok(new { message = "User registered successfully", userId = user.Id });
         }
@@ -95,12 +96,13 @@ namespace GymManagement.Controllers
             var tokenString = new JwtSecurityTokenHandler()
                 .WriteToken(token);
 
+            // Shape from the shared contract: { token, email, role, displayName }
             return Ok(new
             {
-                userId = user.Id,
+                token = tokenString,
                 email = user.Email,
-                roles,
-                token = tokenString
+                role = roles.FirstOrDefault(),
+                displayName = user.Email
             });
         }
     }
@@ -109,7 +111,7 @@ namespace GymManagement.Controllers
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty; // "Admin" | "PersonalTrainer" | "GymMember"
+        public string Role { get; set; } = string.Empty; // "Admin" | "Trainer" | "Member"
     }
 
     public class LoginDto

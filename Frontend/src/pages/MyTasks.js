@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Container, Table, Form, Alert, Spinner, Button } from "react-bootstrap";
-// TODO: uncomment once the shared api.js arrives from the Login branch
-// import api from "../../services/api";
-
-const sampleTasks = [
-  { id: 1, exerciseName: "Bench press", description: "Flat bench, controlled", sets: 4, repetitions: 10, dueDate: "2026-10-05", status: "NotStarted", workoutPlanId: 1, workoutPlanName: "Upper body" },
-  { id: 2, exerciseName: "Squats", description: "Barbell, full depth", sets: 4, repetitions: 8, dueDate: "2026-10-06", status: "InProgress", workoutPlanId: 2, workoutPlanName: "Leg day" },
-  { id: 3, exerciseName: "Treadmill run", description: "Steady pace", sets: 1, repetitions: 0, dueDate: "2026-10-07", status: "Complete", workoutPlanId: 3, workoutPlanName: "Cardio" },
-  { id: 4, exerciseName: "Plank", description: "Hold with good form", sets: 3, repetitions: 0, dueDate: "2026-10-08", status: "NotStarted", workoutPlanId: 4, workoutPlanName: "Core" },
-  { id: 5, exerciseName: "Lunges", description: "Walking lunges", sets: 3, repetitions: 12, dueDate: "2026-10-09", status: "InProgress", workoutPlanId: 2, workoutPlanName: "Leg day" },
-];
+import api from "../services/api";
 
 function MyTasks() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,18 +10,19 @@ function MyTasks() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
-  const [usingSample, setUsingSample] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        // TODO: replace the next line with: const res = await api.get("/member/tasks");
-        throw new Error("api.js not connected yet");
-        // setTasks(res.data);
+        const res = await api.get("/member/tasks");
+        setTasks(res.data);
       } catch (err) {
-        setTasks(sampleTasks);
-        setUsingSample(true);
+        setLoadError(
+          (err.response && err.response.data && err.response.data.message) ||
+            "Could not load your tasks. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -45,19 +37,15 @@ function MyTasks() {
     // Update the screen straight away
     setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
 
-    // Sample data has no server to save to
-    if (usingSample) return;
-
     try {
-      // TODO: uncomment once api.js is connected
-      // await api.put(`/member/tasks/${taskId}/status`, { status: newStatus });
+      await api.put(`/member/tasks/${taskId}/status`, { status: newStatus });
     } catch (err) {
       // Put the old status back if the server refused
       setTasks(previous);
-      const message =
+      setError(
         (err.response && err.response.data && err.response.data.message) ||
-        "Could not update the task status. Please try again.";
-      setError(message);
+          "Could not update the task status. Please try again."
+      );
     }
   }
 
@@ -73,13 +61,16 @@ function MyTasks() {
     );
   }
 
+  if (loadError) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">{loadError}</Alert>
+      </Container>
+    );
+  }
+
   return (
     <Container className="mt-4">
-      {usingSample && (
-        <Alert variant="info">
-          Showing sample data. Status changes are not saved until the live tasks are connected.
-        </Alert>
-      )}
       {error && <Alert variant="danger">{error}</Alert>}
       {planId && (
         <Alert variant="secondary">
