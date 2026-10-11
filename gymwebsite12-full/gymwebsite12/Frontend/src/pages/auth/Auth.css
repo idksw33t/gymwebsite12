@@ -1,0 +1,76 @@
+/* Shared styles for Login and Register so the card matches the background */
+.auth-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #b30000 0%, #f7f7f7 50%, #b30000 100%);
+  background-size: 200% 200%;
+  animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border: none;
+  border-top: 6px solid #b30000;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px rgba(120, 0, 0, 0.35);
+}
+
+.auth-title {
+  color: #b30000;
+  font-weight: 700;
+}
+
+.auth-card .form-label {
+  color: #7a0000;
+  font-weight: 500;
+}
+
+.auth-card .form-control:focus {
+  border-color: #b30000;
+  box-shadow: 0 0 0 0.2rem rgba(179, 0, 0, 0.2);
+}
+
+.auth-btn.btn {
+  background-color: #b30000;
+  border-color: #b30000;
+  color: #fff;
+  font-weight: 600;
+}
+
+.auth-btn.btn:hover,
+.auth-btn.btn:focus,
+.auth-btn.btn:active {
+  background-color: #8a0000;
+  border-color: #8a0000;
+  color: #fff;
+}
+
+.auth-btn.btn:disabled {
+  background-color: #b30000;
+  border-color: #b30000;
+  opacity: 0.65;
+}
+
+.auth-link {
+  color: #b30000;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  color: #8a0000;
+  text-decoration: underline;
+}

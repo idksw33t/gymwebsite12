@@ -1,0 +1,150 @@
+/* Login page only - Register keeps using Auth.css */
+
+/* ---------- Background: slow red/white gradient ---------- */
+.lg-bg {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, #ffffff 0%, #e11d1d 30%, #7a0000 55%, #e11d1d 78%, #ffffff 100%);
+  background-size: 300% 300%;
+  animation: lgShift 16s ease-in-out infinite;
+}
+
+@keyframes lgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ---------- Card: hero panel + form panel ---------- */
+.lg-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 880px;
+  min-height: 520px;
+  flex-direction: row;
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(60, 0, 0, 0.55);
+}
+
+.lg-hero {
+  flex: 1 1 46%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 2.5rem 2rem;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(160deg, #1a0000 0%, #5c0000 55%, #b30000 100%);
+}
+
+.lg-kicker {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.lg-slogan {
+  margin: 0;
+  font-weight: 900;
+  font-size: 2.4rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lg-slogan span {
+  color: #ff4d4d;
+}
+
+/* ---------- Form side ---------- */
+.lg-form-wrap {
+  flex: 1 1 54%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.75rem 2.5rem !important;
+  background: #fff;
+}
+
+.lg-title {
+  margin: 0 0 0.25rem;
+  font-weight: 800;
+  font-size: 1.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #1a0000;
+}
+
+.lg-sub {
+  margin: 0 0 1.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #b30000;
+}
+
+.lg-form-wrap .form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.lg-form-wrap .form-control {
+  border: 0;
+  border-bottom: 2px solid #ddd;
+  border-radius: 0;
+  background: #f6f6f6;
+  padding: 0.8rem 0.9rem;
+}
+
+.lg-form-wrap .form-control:focus {
+  background: #fff;
+  border-bottom-color: #b30000;
+  box-shadow: none;
+}
+
+.lg-btn.btn {
+  border: 0;
+  border-radius: 4px;
+  padding: 0.85rem;
+  background: linear-gradient(90deg, #8a0000, #e11d1d);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lg-btn.btn:hover,
+.lg-btn.btn:focus {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(179, 0, 0, 0.45);
+}
+
+.lg-btn.btn:disabled {
+  color: #fff;
+  opacity: 0.65;
+}
+
+/* ---------- Small screens: stack hero above form ---------- */
+@media (max-width: 767px) {
+  .lg-card { flex-direction: column; min-height: 0; max-width: 460px; }
+  .lg-hero { padding: 1.75rem 1.25rem; gap: 1rem; }
+  .lg-slogan { font-size: 1.7rem; }
+  .lg-form-wrap { padding: 2rem 1.5rem !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-bg { animation: none; }
+}
